@@ -9,6 +9,11 @@ const {
   connectRabbitMQ,
 } = require("./config/rabbitmq");
 
+const {
+  verifyMailConnection,
+} = require("./services/mailservice");
+
+
 const PORT =
   process.env.PORT || 5004;
 
@@ -21,11 +26,15 @@ const startServer = async () => {
     await connectDB();
 
 
+    // Gmail
+    await verifyMailConnection();
+
+
     // RabbitMQ
     await connectRabbitMQ();
 
 
-    // Express
+    // Start server
     app.listen(PORT, () => {
 
       console.log(

@@ -1,18 +1,30 @@
 const amqp = require("amqplib");
 
-const EXCHANGE_NAME = "cake_delight_exchange";
+const {
+  sendOrderConfirmation,
+} = require("../services/mailservice");
 
-const QUEUE_NAME = "notification_queue";
 
-const ROUTING_KEY = "order.placed";
+const EXCHANGE_NAME =
+  "cake_delight_exchange";
+
+const QUEUE_NAME =
+  "notification_queue";
+
+const ROUTING_KEY =
+  "order.placed";
+
 
 const connectRabbitMQ = async () => {
+
   try {
 
-    // Connect to RabbitMQ
-    const connection = await amqp.connect(
-      process.env.RABBITMQ_URL
-    );
+    // Connect RabbitMQ
+    const connection =
+      await amqp.connect(
+        process.env.RABBITMQ_URL
+      );
+
 
     // Create channel
     const channel =
@@ -38,7 +50,7 @@ const connectRabbitMQ = async () => {
     );
 
 
-    // Connect queue to exchange
+    // Bind queue
     await channel.bindQueue(
       QUEUE_NAME,
       EXCHANGE_NAME,
@@ -46,7 +58,9 @@ const connectRabbitMQ = async () => {
     );
 
 
-    console.log("RabbitMQ Connected");
+    console.log(
+      "RabbitMQ Connected"
+    );
 
     console.log(
       "Notification Queue Ready"
@@ -56,6 +70,7 @@ const connectRabbitMQ = async () => {
     // Consume messages
     channel.consume(
       QUEUE_NAME,
+
       async (message) => {
 
         if (!message) {
@@ -83,23 +98,79 @@ const connectRabbitMQ = async () => {
           );
 
 
-          // Process notification
-          await handleOrderPlaced(event);
+          // Send real email
+          await sendOrderConfirmation({
+
+            email: event.email,
+
+            customerName:
+              event.customerName,
+
+            orderId:
+              event.orderId,
+
+            items:
+              event.items,
+
+            totalAmount:
+              event.totalAmount,
+          });
 
 
-          // Tell RabbitMQ message was successfully processed
+          console.log(
+            `Email sent for order: ${event.orderId}`
+          );
+
+
+          // Save notification
+          const NotificationService =
+            require(
+              "../services/notificationservice"
+            );
+
+
+          await NotificationService
+            .createNotification({
+
+              orderId:
+                event.orderId,
+
+              customerName:
+                event.customerName,
+
+              email:
+                event.email,
+
+              phone:
+                event.phone,
+
+              message:
+                "Order confirmation email sent successfully.",
+
+              type:
+                "EMAIL",
+
+              status:
+                "SENT",
+            });
+
+
+          // Acknowledge message
           channel.ack(message);
 
 
         } catch (error) {
 
           console.error(
-            "Message processing failed:",
+            "Notification processing failed:",
             error.message
           );
 
 
-          // Requeue message
+          /*
+           * Message will return to queue
+           * and can be processed again.
+           */
           channel.nack(
             message,
             false,
@@ -118,43 +189,6 @@ const connectRabbitMQ = async () => {
 
     throw error;
   }
-};
-
-
-// Process OrderPlaced event
-const handleOrderPlaced = async (event) => {
-
-  const NotificationService =
-    require(
-      "../services/notification.service"
-    );
-
-
-  await NotificationService.createNotification({
-
-    orderId: event.orderId,
-
-    customerName:
-      event.customerName,
-
-    email:
-      event.email,
-
-    phone:
-      event.phone,
-
-    message:
-      "Your order has been placed successfully.",
-
-    type: "EMAIL",
-
-    status: "SENT",
-  });
-
-
-  console.log(
-    `Notification created for order: ${event.orderId}`
-  );
 };
 
 

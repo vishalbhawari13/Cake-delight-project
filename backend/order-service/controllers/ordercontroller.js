@@ -1,8 +1,11 @@
 const BasketService = require("../services/basketservice");
 const OrderService = require("../services/orderservice");
-const NotificationService = require("../services/notificationservice");
 
 const calculateTotal = require("../utils/calculateTotal");
+
+const {
+  publishOrderPlaced,
+} = require("../services/eventservice");
 
 
 // Checkout
@@ -65,22 +68,9 @@ const checkout = async (req, res, next) => {
       status: "PLACED",
     });
 
-    // Send notification
-    try {
-      await NotificationService.sendNotification({
-        orderId: order._id,
-        customerName: customerName,
-        email: email,
-        phone: phone,
-        message:
-          "Your order has been placed successfully.",
-      });
-    } catch (notificationError) {
-      console.log(
-        "Notification failed:",
-        notificationError.message
-      );
-    }
+    
+    // Publish RabbitMQ event
+    publishOrderPlaced(order);
 
     // Clear basket
     await BasketService.clearBasket();
