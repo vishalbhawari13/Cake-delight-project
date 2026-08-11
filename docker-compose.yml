@@ -1,0 +1,172 @@
+services:
+
+  # ==========================================
+  # MongoDB
+  # ==========================================
+
+  mongodb:
+    image: mongo:7
+    container_name: cake-delight-mongodb
+
+    ports:
+      - "27017:27017"
+
+    volumes:
+      - mongodb_data:/data/db
+
+    restart: unless-stopped
+
+
+  # ==========================================
+  # RabbitMQ
+  # ==========================================
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: cake-delight-rabbitmq
+
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+    restart: unless-stopped
+
+
+  # ==========================================
+  # Catalog Service
+  # ==========================================
+
+  catalog-service:
+    build:
+      context: ./backend/catalog-service
+
+    container_name: cake-delight-catalog
+
+    ports:
+      - "5001:5001"
+
+    env_file:
+      - ./backend/catalog-service/.env
+
+    depends_on:
+      - mongodb
+
+    restart: unless-stopped
+
+
+  # ==========================================
+  # Order Service
+  # ==========================================
+
+  order-service:
+    build:
+      context: ./backend/order-service
+
+    container_name: cake-delight-order
+
+    ports:
+      - "5002:5002"
+
+    env_file:
+      - ./backend/order-service/.env
+
+    depends_on:
+      - mongodb
+      - rabbitmq
+      - catalog-service
+
+    restart: unless-stopped
+
+
+  # ==========================================
+  # Rating Service
+  # ==========================================
+
+  rating-service:
+    build:
+      context: ./backend/rating-service
+
+    container_name: cake-delight-rating
+
+    ports:
+      - "5003:5003"
+
+    env_file:
+      - ./backend/rating-service/.env
+
+    depends_on:
+      - mongodb
+
+    restart: unless-stopped
+
+
+  # ==========================================
+  # Notification Service
+  # ==========================================
+
+  notification-service:
+    build:
+      context: ./backend/notification-service
+
+    container_name: cake-delight-notification
+
+    ports:
+      - "5004:5004"
+
+    env_file:
+      - ./backend/notification-service/.env
+
+    depends_on:
+      - mongodb
+      - rabbitmq
+
+    restart: unless-stopped
+
+
+  # ==========================================
+  # API Gateway
+  # ==========================================
+
+  api-gateway:
+    build:
+      context: ./backend/api-gateway
+
+    container_name: cake-delight-gateway
+
+    ports:
+      - "3000:3000"
+
+    env_file:
+      - ./backend/api-gateway/.env
+
+    depends_on:
+      - catalog-service
+      - order-service
+      - rating-service
+      - notification-service
+
+    restart: unless-stopped
+
+
+# ==========================================
+# Volumes
+# ==========================================
+
+volumes:
+
+  mongodb_data:
+
+  rabbitmq_data:

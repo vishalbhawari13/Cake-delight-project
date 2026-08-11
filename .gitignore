@@ -1,7 +1,9 @@
-# Dependencies
 node_modules/
 
-# Environment files
 .env
-.env.*
-!.env.example
+
+backend/*/.env
+
+npm-debug.log
+
+.DS_Store
