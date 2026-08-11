@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-
+import RatingForm from "../components/RatingForm";
 import { getCakeById } from "../services/catalogService";
 import {
     getCakeRatings,
@@ -237,6 +237,14 @@ function CakeDetails() {
                 )}
 
             </section>
+
+            <RatingForm
+                cakeId={id}
+                userId="user1"
+                onRatingAdded={() => {
+                    window.location.reload();
+                }}
+            />
 
         </main>
     );
