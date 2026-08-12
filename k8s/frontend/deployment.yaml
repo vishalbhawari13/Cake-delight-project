@@ -20,7 +20,7 @@ spec:
       containers:
         - name: frontend
 
-          image: cake-delight-frontend:v2
+          image: cake-delight-frontend:v3
           imagePullPolicy: IfNotPresent
 
           ports:
