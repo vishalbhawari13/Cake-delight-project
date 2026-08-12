@@ -161,12 +161,29 @@ services:
     restart: unless-stopped
 
 
+  # ==========================================
+  # Frontend
+  # ==========================================
+
+  frontend:
+    build:
+      context: ./frontend
+
+    container_name: cake-delight-frontend
+
+    ports:
+      - "5173:80"
+
+    depends_on:
+      - api-gateway
+
+    restart: unless-stopped
+
+
 # ==========================================
 # Volumes
 # ==========================================
 
 volumes:
-
   mongodb_data:
-
   rabbitmq_data:
