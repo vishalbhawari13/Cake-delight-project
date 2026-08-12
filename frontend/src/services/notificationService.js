@@ -2,7 +2,7 @@ import api from "./api";
 
 export const getNotifications = async () => {
     const response = await api.get(
-        "/api/notifications"
+        "/notifications"
     );
 
     return response.data;
@@ -10,7 +10,7 @@ export const getNotifications = async () => {
 
 export const getNotificationsByOrder = async (orderId) => {
     const response = await api.get(
-        `/api/notifications/order/${orderId}`
+        `/notifications/order/${orderId}`
     );
 
     return response.data;

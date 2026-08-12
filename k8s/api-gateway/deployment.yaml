@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-gateway
+  namespace: cake-delight
+
+spec:
+  replicas: 1
+
+  selector:
+    matchLabels:
+      app: api-gateway
+
+  template:
+    metadata:
+      labels:
+        app: api-gateway
+
+    spec:
+      containers:
+        - name: api-gateway
+
+          image: cake-delight-api-gateway:latest
+          imagePullPolicy: IfNotPresent
+
+          ports:
+            - containerPort: 3000
+
+          env:
+            - name: PORT
+              value: "3000"
+
+            - name: CATALOG_SERVICE_URL
+              value: "http://catalog-service:5001"
+
+            - name: ORDER_SERVICE_URL
+              value: "http://order-service:5002"
+
+            - name: RATING_SERVICE_URL
+              value: "http://rating-service:5003"
+
+            - name: NOTIFICATION_SERVICE_URL
+              value: "http://notification-service:5004"
+
+          readinessProbe:
+            tcpSocket:
+              port: 3000
+            initialDelaySeconds: 10
+            periodSeconds: 5
+
+          livenessProbe:
+            tcpSocket:
+              port: 3000
+            initialDelaySeconds: 20
+            periodSeconds: 10

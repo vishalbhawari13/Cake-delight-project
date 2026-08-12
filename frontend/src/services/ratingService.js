@@ -2,7 +2,7 @@ import api from "./api";
 
 export const createRating = async (ratingData) => {
     const response = await api.post(
-        "/api/ratings",
+        "/ratings",
         ratingData
     );
 
@@ -11,7 +11,7 @@ export const createRating = async (ratingData) => {
 
 export const getCakeRatings = async (cakeId) => {
     const response = await api.get(
-        `/api/ratings/cake/${cakeId}`
+        `/ratings/cake/${cakeId}`
     );
 
     return response.data;
@@ -19,7 +19,7 @@ export const getCakeRatings = async (cakeId) => {
 
 export const getAverageRating = async (cakeId) => {
     const response = await api.get(
-        `/api/ratings/cake/${cakeId}/average`
+        `/ratings/cake/${cakeId}/average`
     );
 
     return response.data;
@@ -27,7 +27,7 @@ export const getAverageRating = async (cakeId) => {
 
 export const getRatingById = async (ratingId) => {
     const response = await api.get(
-        `/api/ratings/${ratingId}`
+        `/ratings/${ratingId}`
     );
 
     return response.data;
@@ -35,7 +35,7 @@ export const getRatingById = async (ratingId) => {
 
 export const updateRating = async (ratingId, data) => {
     const response = await api.put(
-        `/api/ratings/${ratingId}`,
+        `/ratings/${ratingId}`,
         data
     );
 
@@ -44,7 +44,7 @@ export const updateRating = async (ratingId, data) => {
 
 export const deleteRating = async (ratingId) => {
     const response = await api.delete(
-        `/api/ratings/${ratingId}`
+        `/ratings/${ratingId}`
     );
 
     return response.data;

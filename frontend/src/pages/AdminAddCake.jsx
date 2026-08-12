@@ -3,10 +3,6 @@ import api from "../services/api";
 import "./AdminAddCake.css";
 
 function AdminAddCake() {
-    // =========================
-    // CAKE FORM
-    // =========================
-
     const [form, setForm] = useState({
         name: "",
         description: "",
@@ -19,20 +15,10 @@ function AdminAddCake() {
     const [message, setMessage] = useState("");
     const [loading, setLoading] = useState(false);
 
-
-    // =========================
-    // ORDERS
-    // =========================
-
     const [orders, setOrders] = useState([]);
     const [ordersLoading, setOrdersLoading] = useState(false);
     const [orderMessage, setOrderMessage] = useState("");
     const [updatingOrderId, setUpdatingOrderId] = useState(null);
-
-
-    // =========================
-    // AVAILABLE STATUSES
-    // =========================
 
     const statuses = [
         "PLACED",
@@ -42,22 +28,12 @@ function AdminAddCake() {
         "DELIVERED"
     ];
 
-
-    // =========================
-    // HANDLE CAKE INPUT
-    // =========================
-
     const handleChange = (e) => {
         setForm({
             ...form,
             [e.target.name]: e.target.value
         });
     };
-
-
-    // =========================
-    // ADD CAKE
-    // =========================
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -67,7 +43,7 @@ function AdminAddCake() {
 
         try {
             const response = await api.post(
-                "/api/catalog/cakes",
+                "/catalog/cakes",
                 {
                     name: form.name,
                     description: form.description,
@@ -104,32 +80,14 @@ function AdminAddCake() {
         }
     };
 
-
-    // =========================
-    // GET ALL ORDERS
-    // =========================
-
     const fetchOrders = async () => {
         setOrdersLoading(true);
         setOrderMessage("");
 
         try {
-            const response = await api.get("/api/orders");
+            const response = await api.get("/orders");
 
             console.log("Orders API response:", response.data);
-
-            /*
-                API response:
-
-                {
-                    success: true,
-                    count: 3,
-                    data: [...]
-                }
-
-                Therefore:
-                response.data.data = orders
-            */
 
             if (Array.isArray(response.data.data)) {
                 setOrders(response.data.data);
@@ -151,19 +109,9 @@ function AdminAddCake() {
         }
     };
 
-
-    // =========================
-    // LOAD ORDERS ON PAGE LOAD
-    // =========================
-
     useEffect(() => {
         fetchOrders();
     }, []);
-
-
-    // =========================
-    // UPDATE ORDER STATUS
-    // =========================
 
     const handleStatusChange = async (orderId, newStatus) => {
         setUpdatingOrderId(orderId);
@@ -171,7 +119,7 @@ function AdminAddCake() {
 
         try {
             const response = await api.put(
-                `/api/orders/${orderId}/status`,
+                `/orders/${orderId}/status`,
                 {
                     status: newStatus
                 }
@@ -182,7 +130,6 @@ function AdminAddCake() {
                 response.data
             );
 
-            // Update only this order in the UI
             setOrders((currentOrders) =>
                 currentOrders.map((order) =>
                     order._id === orderId
@@ -219,11 +166,6 @@ function AdminAddCake() {
         }
     };
 
-
-    // =========================
-    // FORMAT STATUS
-    // =========================
-
     const formatStatus = (status) => {
         if (!status) {
             return "Unknown";
@@ -236,11 +178,6 @@ function AdminAddCake() {
                 letter.toUpperCase()
             );
     };
-
-
-    // =========================
-    // FORMAT DATE
-    // =========================
 
     const formatDate = (date) => {
         if (!date) {
@@ -260,31 +197,14 @@ function AdminAddCake() {
         }
     };
 
-
-    // =========================
-    // FORMAT MONEY
-    // =========================
-
     const formatMoney = (amount) => {
-        return Number(amount || 0).toLocaleString(
-            "en-IN"
-        );
+        return Number(amount || 0).toLocaleString("en-IN");
     };
-
-
-    // =========================
-    // RENDER
-    // =========================
 
     return (
         <main className="admin-page">
 
             <div className="admin-container">
-
-
-                {/* ==========================================
-                    ADD NEW CAKE
-                ========================================== */}
 
                 <div className="admin-header">
 
@@ -304,26 +224,16 @@ function AdminAddCake() {
 
                 </div>
 
-
-                {/* ==========================================
-                    CAKE FORM
-                ========================================== */}
-
                 <form
                     className="cake-form"
                     onSubmit={handleSubmit}
                 >
-
-                    {/* Cake Information */}
 
                     <div className="form-section">
 
                         <h2>
                             🍰 Cake Information
                         </h2>
-
-
-                        {/* Name */}
 
                         <div className="form-group">
 
@@ -343,9 +253,6 @@ function AdminAddCake() {
 
                         </div>
 
-
-                        {/* Description */}
-
                         <div className="form-group">
 
                             <label htmlFor="description">
@@ -363,9 +270,6 @@ function AdminAddCake() {
                             />
 
                         </div>
-
-
-                        {/* Price + Stock */}
 
                         <div className="form-row">
 
@@ -397,7 +301,6 @@ function AdminAddCake() {
 
                             </div>
 
-
                             <div className="form-group">
 
                                 <label htmlFor="stock">
@@ -419,9 +322,6 @@ function AdminAddCake() {
 
                         </div>
 
-
-                        {/* Category */}
-
                         <div className="form-group">
 
                             <label htmlFor="category">
@@ -441,11 +341,6 @@ function AdminAddCake() {
                         </div>
 
                     </div>
-
-
-                    {/* ==========================================
-                        CAKE IMAGE
-                    ========================================== */}
 
                     <div className="form-section">
 
@@ -475,7 +370,6 @@ function AdminAddCake() {
 
                         </div>
 
-
                         {form.imageUrl && (
 
                             <div className="image-preview">
@@ -493,11 +387,6 @@ function AdminAddCake() {
                         )}
 
                     </div>
-
-
-                    {/* ==========================================
-                        ADD CAKE BUTTON
-                    ========================================== */}
 
                     <div className="form-actions">
 
@@ -524,11 +413,6 @@ function AdminAddCake() {
 
                 </form>
 
-
-                {/* ==========================================
-                    CAKE MESSAGE
-                ========================================== */}
-
                 {message && (
 
                     <div
@@ -543,15 +427,7 @@ function AdminAddCake() {
 
                 )}
 
-
-                {/* ==========================================
-                    ORDER MANAGEMENT
-                ========================================== */}
-
                 <section className="admin-orders">
-
-
-                    {/* Orders Header */}
 
                     <div className="orders-header">
 
@@ -567,7 +443,6 @@ function AdminAddCake() {
 
                         </div>
 
-
                         <button
                             type="button"
                             className="refresh-button"
@@ -581,9 +456,6 @@ function AdminAddCake() {
 
                     </div>
 
-
-                    {/* Order Message */}
-
                     {orderMessage && (
 
                         <div className="order-message">
@@ -591,11 +463,6 @@ function AdminAddCake() {
                         </div>
 
                     )}
-
-
-                    {/* ==========================================
-                        LOADING
-                    ========================================== */}
 
                     {ordersLoading ? (
 
@@ -609,13 +476,7 @@ function AdminAddCake() {
 
                         </div>
 
-
                     ) : orders.length === 0 ? (
-
-
-                        /* ==========================================
-                            NO ORDERS
-                        ========================================== */
 
                         <div className="no-orders">
 
@@ -633,13 +494,7 @@ function AdminAddCake() {
 
                         </div>
 
-
                     ) : (
-
-
-                        /* ==========================================
-                            ORDERS
-                        ========================================== */
 
                         <div className="orders-list">
 
@@ -649,11 +504,6 @@ function AdminAddCake() {
                                     className="order-card"
                                     key={order._id}
                                 >
-
-
-                                    {/* ==================================
-                                        ORDER HEADER
-                                    ================================== */}
 
                                     <div className="order-card-header">
 
@@ -669,7 +519,6 @@ function AdminAddCake() {
 
                                         </div>
 
-
                                         <div
                                             className={`order-status status-${String(
                                                 order.status || ""
@@ -682,15 +531,7 @@ function AdminAddCake() {
 
                                     </div>
 
-
-                                    {/* ==================================
-                                        CUSTOMER INFORMATION
-                                    ================================== */}
-
                                     <div className="order-info">
-
-
-                                        {/* Customer */}
 
                                         <div className="order-info-item">
 
@@ -704,9 +545,6 @@ function AdminAddCake() {
 
                                         </div>
 
-
-                                        {/* Email */}
-
                                         <div className="order-info-item">
 
                                             <span>
@@ -719,9 +557,6 @@ function AdminAddCake() {
 
                                         </div>
 
-
-                                        {/* Phone */}
-
                                         <div className="order-info-item">
 
                                             <span>
@@ -733,9 +568,6 @@ function AdminAddCake() {
                                             </strong>
 
                                         </div>
-
-
-                                        {/* Date */}
 
                                         <div className="order-info-item">
 
@@ -750,9 +582,6 @@ function AdminAddCake() {
                                             </strong>
 
                                         </div>
-
-
-                                        {/* Total */}
 
                                         <div className="order-info-item">
 
@@ -770,17 +599,11 @@ function AdminAddCake() {
 
                                     </div>
 
-
-                                    {/* ==================================
-                                        ORDER ITEMS
-                                    ================================== */}
-
                                     <div className="order-items">
 
                                         <h4>
                                             🍰 Ordered Cakes
                                         </h4>
-
 
                                         {order.items?.map(
                                             (item, index) => {
@@ -796,15 +619,9 @@ function AdminAddCake() {
                                                         key={`${item.cakeId}-${index}`}
                                                     >
 
-
-                                                        {/* Cake Icon */}
-
                                                         <div className="order-item-image">
                                                             🎂
                                                         </div>
-
-
-                                                        {/* Cake Details */}
 
                                                         <div className="order-item-details">
 
@@ -825,9 +642,6 @@ function AdminAddCake() {
 
                                                         </div>
 
-
-                                                        {/* Item Total */}
-
                                                         <div className="order-item-price">
 
                                                             <strong>
@@ -846,11 +660,6 @@ function AdminAddCake() {
 
                                     </div>
 
-
-                                    {/* ==================================
-                                        DELIVERY ADDRESS
-                                    ================================== */}
-
                                     <div className="delivery-address">
 
                                         <h4>
@@ -863,11 +672,6 @@ function AdminAddCake() {
 
                                     </div>
 
-
-                                    {/* ==================================
-                                        STATUS UPDATE
-                                    ================================== */}
-
                                     <div className="order-actions">
 
                                         <label
@@ -875,7 +679,6 @@ function AdminAddCake() {
                                         >
                                             Update Order Status
                                         </label>
-
 
                                         <select
                                             id={`status-${order._id}`}
@@ -910,7 +713,6 @@ function AdminAddCake() {
 
                                         </select>
 
-
                                         {updatingOrderId === order._id && (
 
                                             <span className="updating-text">
@@ -938,4 +740,3 @@ function AdminAddCake() {
 }
 
 export default AdminAddCake;
-

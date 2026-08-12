@@ -1,7 +1,7 @@
 import api from "./api";
 
 export const addToBasket = async (cakeId, quantity) => {
-    const response = await api.post("/api/orders/basket", {
+    const response = await api.post("/orders/basket", {
         cakeId,
         quantity
     });
@@ -10,13 +10,13 @@ export const addToBasket = async (cakeId, quantity) => {
 };
 
 export const getBasket = async () => {
-    const response = await api.get("/api/orders/basket");
+    const response = await api.get("/orders/basket");
     return response.data;
 };
 
 export const updateBasket = async (basketId, quantity) => {
     const response = await api.put(
-        `/api/orders/basket/${basketId}`,
+        `/orders/basket/${basketId}`,
         {
             quantity
         }
@@ -27,7 +27,7 @@ export const updateBasket = async (basketId, quantity) => {
 
 export const removeFromBasket = async (basketId) => {
     const response = await api.delete(
-        `/api/orders/basket/${basketId}`
+        `/orders/basket/${basketId}`
     );
 
     return response.data;
@@ -35,7 +35,7 @@ export const removeFromBasket = async (basketId) => {
 
 export const clearBasket = async () => {
     const response = await api.delete(
-        "/api/orders/basket"
+        "/orders/basket"
     );
 
     return response.data;
@@ -43,7 +43,7 @@ export const clearBasket = async () => {
 
 export const checkout = async (customerData) => {
     const response = await api.post(
-        "/api/orders/checkout",
+        "/orders/checkout",
         customerData
     );
 
@@ -51,13 +51,13 @@ export const checkout = async (customerData) => {
 };
 
 export const getOrders = async () => {
-    const response = await api.get("/api/orders");
+    const response = await api.get("/orders");
     return response.data;
 };
 
 export const getOrderById = async (orderId) => {
     const response = await api.get(
-        `/api/orders/${orderId}`
+        `/orders/${orderId}`
     );
 
     return response.data;
@@ -65,7 +65,7 @@ export const getOrderById = async (orderId) => {
 
 export const updateOrderStatus = async (orderId, status) => {
     const response = await api.put(
-        `/api/orders/${orderId}/status`,
+        `/orders/${orderId}/status`,
         {
             status
         }
